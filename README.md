@@ -1,4 +1,4 @@
-# Campus-Carpool-Finder
+# Campus Carpool Finder
 
 A full-stack MERN carpooling web platform designed for college communities to share rides, split travel costs, and commute safely.
 
