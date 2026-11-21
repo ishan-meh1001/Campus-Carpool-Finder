@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "Campus Carpool Finder - Agile Full-Stack MERN Application",
   "scripts": {
+    "mongodb": "cd backend && npm run mongodb",
     "backend": "cd backend && npm run dev",
     "frontend": "cd frontend && npm run dev",
     "test": "cd backend && npm test",

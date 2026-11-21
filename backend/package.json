@@ -6,6 +6,7 @@
   "scripts": {
     "start": "node src/server.js",
     "dev": "nodemon src/server.js",
+    "mongodb": "node scripts/start-mongo.js",
     "test": "jest --runInBand --detectOpenHandles"
   },
   "keywords": [
