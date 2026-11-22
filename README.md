@@ -2,7 +2,7 @@
 
 A full-stack MERN carpooling web platform designed for college communities to share rides, split travel costs, and commute safely.
 
-Built as part of the **Fundamentals of Agile Software Development Lab** by a team of 4 B.Tech CSE students.
+
 
 ---
 
