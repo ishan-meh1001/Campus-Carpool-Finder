@@ -83,6 +83,28 @@ const RideDetails = () => {
     }
   };
 
+  const handleDriverCompleteRide = async () => {
+    if (!window.confirm('Mark this journey as completed? Passengers will be prompted to leave ratings.')) return;
+    try {
+      setSubmitting(true);
+      const res = await rideService.completeRide(ride._id);
+      if (res.success) {
+        setRide({ ...ride, status: 'completed' });
+        setRequestStatus({
+          type: 'success',
+          text: 'Ride marked as completed! Co-travellers can now exchange ratings.',
+        });
+      }
+    } catch (err) {
+      setRequestStatus({
+        type: 'error',
+        text: err.response?.data?.message || 'Failed to complete ride.',
+      });
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
   if (loading) {
     return (
       <div className="py-24 flex flex-col items-center justify-center space-y-3">
@@ -122,9 +144,8 @@ const RideDetails = () => {
         <div className="md:col-span-2 space-y-6">
           <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm space-y-6">
             <div className="flex items-center justify-between pb-4 border-b border-gray-100">
-              <span className={`px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wider ${
-                ride.status === 'active' ? 'bg-emerald-50 text-emerald-700' : 'bg-red-50 text-red-700'
-              }`}>
+              <span className={`px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wider ${ride.status === 'active' ? 'bg-emerald-50 text-emerald-700' : 'bg-red-50 text-red-700'
+                }`}>
                 {ride.status}
               </span>
               <span className="text-xs text-gray-400">
@@ -287,11 +308,10 @@ const RideDetails = () => {
 
             {requestStatus.text && (
               <div
-                className={`flex items-start space-x-2 text-xs p-3 rounded-xl border ${
-                  requestStatus.type === 'success'
-                    ? 'bg-emerald-50 text-emerald-700 border-emerald-100'
-                    : 'bg-red-50 text-red-700 border-red-100'
-                }`}
+                className={`flex items-start space-x-2 text-xs p-3 rounded-xl border ${requestStatus.type === 'success'
+                  ? 'bg-emerald-50 text-emerald-700 border-emerald-100'
+                  : 'bg-red-50 text-red-700 border-red-100'
+                  }`}
               >
                 {requestStatus.type === 'success' ? (
                   <CheckCircle className="w-4 h-4 flex-shrink-0 mt-0.5" />
@@ -303,8 +323,25 @@ const RideDetails = () => {
             )}
 
             {isOwnRide ? (
-              <div className="p-4 bg-indigo-50 text-indigo-700 text-xs rounded-xl font-medium text-center">
-                You are the driver of this ride. Manage incoming requests from your dashboard.
+              <div className="space-y-3">
+                <div className="p-3 bg-indigo-50 text-indigo-700 text-xs rounded-xl font-medium text-center">
+                  You are the driver of this ride. Manage incoming requests from your dashboard.
+                </div>
+                {ride.status === 'active' && (
+                  <button
+                    type="button"
+                    onClick={handleDriverCompleteRide}
+                    disabled={submitting}
+                    className="w-full py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-xs rounded-xl shadow-sm transition"
+                  >
+                    ✓ Mark Journey as Completed
+                  </button>
+                )}
+                {ride.status === 'completed' && (
+                  <div className="p-2.5 bg-emerald-50 text-emerald-800 text-xs font-semibold rounded-xl text-center">
+                    Journey Finished
+                  </div>
+                )}
               </div>
             ) : ride.availableSeats <= 0 ? (
               <div className="p-4 bg-gray-100 text-gray-600 text-xs rounded-xl font-medium text-center">

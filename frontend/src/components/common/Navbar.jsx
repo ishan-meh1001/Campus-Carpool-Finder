@@ -38,9 +38,6 @@ const Navbar = () => {
                 <span className="text-lg font-bold bg-gradient-to-r from-indigo-600 to-violet-600 bg-clip-text text-transparent">
                   Campus Carpool
                 </span>
-                <span className="hidden sm:inline-block ml-1 text-xs px-2 py-0.5 bg-indigo-50 text-indigo-700 font-medium rounded-full">
-                  Student MVP
-                </span>
               </div>
             </Link>
           </div>

@@ -67,6 +67,23 @@ const MyRides = () => {
     }
   };
 
+  // Driver marks ride as completed
+  const handleCompleteRide = async (rideId) => {
+    if (!window.confirm('Mark this ride as completed? Confirmed passengers will be prompted to submit ratings.')) return;
+    try {
+      const res = await rideService.completeRide(rideId);
+      if (res.success) {
+        setActionMsg({ type: 'success', text: 'Ride marked as completed! Passengers can now exchange ratings.' });
+        loadData();
+      }
+    } catch (err) {
+      setActionMsg({
+        type: 'error',
+        text: err.response?.data?.message || 'Failed to complete ride.',
+      });
+    }
+  };
+
   // Driver cancels a ride
   const handleCancelRide = async (rideId) => {
     if (!window.confirm('Are you sure you want to cancel this ride?')) return;
@@ -271,6 +288,8 @@ const MyRides = () => {
                         className={`text-[11px] px-2.5 py-0.5 rounded-full font-semibold uppercase ${
                           ride.status === 'active'
                             ? 'bg-emerald-50 text-emerald-700'
+                            : ride.status === 'completed'
+                            ? 'bg-indigo-50 text-indigo-700 font-bold'
                             : 'bg-rose-50 text-rose-700'
                         }`}
                       >
@@ -297,14 +316,29 @@ const MyRides = () => {
                       >
                         View Full Details &rarr;
                       </Link>
-                      {ride.status === 'active' && (
-                        <button
-                          onClick={() => handleCancelRide(ride._id)}
-                          className="text-xs font-semibold text-rose-600 hover:underline"
-                        >
-                          Cancel Ride
-                        </button>
-                      )}
+                      <div className="flex items-center space-x-3">
+                        {ride.status === 'active' && (
+                          <>
+                            <button
+                              onClick={() => handleCompleteRide(ride._id)}
+                              className="text-xs font-semibold text-emerald-600 hover:underline"
+                            >
+                              Complete Ride
+                            </button>
+                            <button
+                              onClick={() => handleCancelRide(ride._id)}
+                              className="text-xs font-semibold text-rose-600 hover:underline"
+                            >
+                              Cancel Ride
+                            </button>
+                          </>
+                        )}
+                        {ride.status === 'completed' && (
+                          <span className="text-[11px] font-semibold text-indigo-600">
+                            ✓ Journey Ended
+                          </span>
+                        )}
+                      </div>
                     </div>
                   </div>
                 ))}

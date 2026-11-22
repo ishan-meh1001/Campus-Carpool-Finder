@@ -25,6 +25,12 @@ export const rideService = {
     return response.data;
   },
 
+  // Mark ride as completed
+  completeRide: async (id) => {
+    const response = await API.put(`/rides/${id}/complete`);
+    return response.data;
+  },
+
   // Cancel a ride
   cancelRide: async (id) => {
     const response = await API.put(`/rides/${id}/cancel`);

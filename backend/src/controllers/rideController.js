@@ -159,6 +159,53 @@ const getMyOfferedRides = async (req, res, next) => {
   }
 };
 
+// @desc    Mark a ride as completed
+// @route   PUT /api/rides/:id/complete
+// @access  Private (Driver only)
+const completeRide = async (req, res, next) => {
+  try {
+    const ride = await Ride.findById(req.params.id);
+
+    if (!ride) {
+      return res.status(404).json({
+        success: false,
+        message: 'Ride not found.',
+      });
+    }
+
+    // Verify driver ownership or admin role
+    if (ride.driver.toString() !== req.user.id && req.user.role !== 'admin') {
+      return res.status(403).json({
+        success: false,
+        message: 'Only the driver can mark this ride as completed.',
+      });
+    }
+
+    ride.status = 'completed';
+    await ride.save();
+
+    // Notify all confirmed passengers that the ride has finished and they can rate
+    const Notification = require('../models/Notification');
+    for (const passengerId of ride.confirmedPassengers) {
+      await Notification.create({
+        recipient: passengerId,
+        sender: req.user.id,
+        type: 'REQUEST_ACCEPTED',
+        message: `Your ride from ${ride.origin} to ${ride.destination} is marked completed! You can now rate your driver.`,
+        ride: ride._id,
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: 'Ride marked as completed. Co-travellers can now exchange ratings.',
+      ride,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 // @desc    Cancel a posted ride
 // @route   PUT /api/rides/:id/cancel
 // @access  Private (Driver only)
@@ -199,5 +246,6 @@ module.exports = {
   getRides,
   getRideById,
   getMyOfferedRides,
+  completeRide,
   cancelRide,
 };
